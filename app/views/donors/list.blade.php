@@ -5,18 +5,6 @@
 
 @include('layouts.partials.messages')
 
-<form method="GET"> <!-- Should be submitted to the current page -->
-    <table>
-    <?php foreach($listr->filters as $filter): ?>
-        <tr>
-            <td><?php echo $filter->renderLabel() ?></td>
-            <td><?php echo $filter->renderInput() ?></td>
-        </tr>
-    <?php endforeach ?>
-    </table>
-    <button type="submit">Filter</button>
-</form> 
-
 <div class="table-responsive">
 	<table class="table table-striped">
 		<thead>
