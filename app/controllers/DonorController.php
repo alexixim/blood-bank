@@ -7,95 +7,13 @@ class DonorController extends \BaseController {
 	 *
 	 * @return Response
 	 */
-	public function indexx()
+	public function index()
 	{
-
-		// $config = array(
-		//     // Filters identifier
-	 //        'filters' => array(
-	 //    		'blog' => array(
-		//             'title'                 => array('label' => 'Title'),
-		//             'content'               => array('label' => 'Content', 'column' => 'content'),
-		//             'created_at|date'       => array('label' => 'Created At Date'),
-		//             'active'                => array('label' => 'Active', 'type' => 'boolean')
-		//         )
-		//     )
-		// );
-
-
-		// // Initialize Listr by passing your configurations array.
-		// $listr = new Devrtips\Listr\Listr($config);
-
-		// // Load filters and sorters for the given entity.
-		// $listr->initFiltersAndSorters('blog');
-
-		// // This will enable you to access the filters with $listr->filters.
-		// // and sorters with $listr->sorters
-
-		// // Or you can choose to load just one or both of them seperately.
-		// // $listr->initFilters('entity');
-		// // $listr->initSorters('entity');
-
-		// // exit;
-		// $listr->getQuery()->toString();
-		// $listr->getOrder()->toString();
-
 		$donors = Donor::orderBy('created_at', 'desc')
 					->paginate($this->perPage);
 
 		return View::make('donors.list', array(
-			'donors' => $donors,
-			// 'listr' => $listr
-		));
-	}
-
-	public function index()
-	{
-
-		$config = array(
-		    // Filters identifier
-	        'filters' => array(
-	    		'blog' => array(
-		            'name'                 => array('label' => 'Donor Name'),
-		            // 'content'               => array('label' => 'Content', 'column' => array('content', 'summary')),
-		            'dob|date'       => array('label' => 'Date of Birth'),
-		            // 'active'                => array('label' => 'Active', 'type' => 'boolean')
-		        )
-		    )
-		);
-
-
-		// Initialize Listr by passing your configurations array.
-		$listr = new Devrtips\Listr\Listr($config);
-
-		// Load filters and sorters for the given entity.
-		$listr->initFiltersAndSorters('blog');
-
-		// This will enable you to access the filters with $listr->filters.
-		// and sorters with $listr->sorters
-
-		// Or you can choose to load just one or both of them seperately.
-		// $listr->initFilters('entity');
-		// $listr->initSorters('entity');
-
-		// exit;
-		
-		$conditions = $listr->getFilterConditions();
-// echo '<pre>', print_r($conditions, true);
-// exit;
-		$listr->getOrder();
-
-		$donors = Donor::orderBy('created_at', 'desc');
-
-		if($conditions){
-			$donors = $donors->whereRaw($conditions);
-		}
-		
-		$donors = $donors->paginate($this->perPage);
-
-		return View::make('donors.list', array(
-			'donors' => $donors,
-			'listr' => $listr
+			'donors' => $donors
 		));
 	}
 

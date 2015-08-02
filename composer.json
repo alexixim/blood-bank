@@ -2,16 +2,9 @@
 	"name": "laravel/laravel",
 	"description": "The Laravel Framework.",
 	"keywords": ["framework", "laravel"],
-	"license": "MIT",
-	"repositories": [
-        {
-            "url": "https://github.com/devrtips/listr.git",
-            "type": "git"
-        }
-    ],
+	"license": "MIT"
 	"require": {
-		"laravel/framework": "4.2.*",
-		"devrtips/listr": "master@dev"
+		"laravel/framework": "4.2.*"
 	},
 	"autoload": {
 		"classmap": [
