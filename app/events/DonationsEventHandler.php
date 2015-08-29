@@ -5,12 +5,12 @@ class DonationsEventHandler {
     
     public function updateLocationProducts($donation)
     {
-        $location_product = LocationProduct::where('location_id', '=', $donation->location->id)
+        /*$location_product = LocationProduct::where('location_id', '=', $donation->location->id)
                                     ->where('product_id', '=', $donation->product->id)->first();
 
         $location_product->quantity = $location_product->quantity + $donation->product->quantity;
 
-        $location_product->save();
+        $location_product->save();*/
     }
 
     public function updateItemInList($donation)

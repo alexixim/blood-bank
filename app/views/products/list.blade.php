@@ -1,7 +1,8 @@
 @extends('layouts.main')
 
 @section('main')
-<h1 class="page-header">Products <small>List</small></h1>
+@include ('layouts.productlayouts.productnav')
+<h1 class="page-header">Items <small>List</small></h1>
 
 @include('layouts.partials.messages')
 

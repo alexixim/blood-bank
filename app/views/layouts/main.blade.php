@@ -22,9 +22,9 @@
 			</div>
 		</div>
 	</div>
-	<div id="loader"></div>
 </body>
 <script src="{{ url('/js/jquery.1.9.min.js') }}"></script>
 <script src="{{ url('/js/bootstrap.min.js') }}"></script>
 <script src="{{ url('/js/main.js') }}"></script>
+@yield('scripts')
 </html>

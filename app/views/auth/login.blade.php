@@ -3,7 +3,7 @@
 <div class="container">
 
   <form class="form-signin" method="POST">
-    <h2 class="form-signin-heading"><img src="{{ url('images/one-blood-logo.jpg') }}" class="img-responsive" /></h2>
+    <h2 class="form-signin-heading"><img src="{{ url('images/one-blood-logo.jpg') }}" class="img-responsive"  /></h2>
 
   	@include('layouts.partials.messages')
 

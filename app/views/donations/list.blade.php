@@ -1,6 +1,7 @@
 @extends('layouts.main')
 
 @section('main')
+@include ('layouts.donationlayouts.donationnav')
 <h1 class="page-header">Donations <small>List</small></h1>
 
 @include('layouts.partials.messages')

@@ -17,4 +17,14 @@ class Donation extends Eloquent {
 	public function product(){
 		return $this->belongsTo('Product');
 	}
+
+	public function scopeMobileCampaigns($query){
+		return $query->join('locations', 'locations.id', '=', 'donations.location_id')
+						->where('locations.location_type_id', '=', '3');
+	}
+
+	public function scopeLocationType($query, $location_type){
+		return $query->join('locations', 'locations.id', '=', 'donations.location_id')
+						->where('locations.location_type_id', '=', $location_type);
+	}
 }

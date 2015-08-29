@@ -19,15 +19,27 @@ Route::get('/', function(){
 });
 
 Route::group(['before' => 'auth'], function(){
-	Route::controller('donor', 'DonorController');
+
+	Route::resource('location', 'LocationController');
+	//Route::controller('location', 'LocationController');
+	
 	Route::resource('donor', 'DonorController');
 
+	Route::get('donation/mobile', array('as' => 'donation.getMobile', 'uses' => 'DonationController@getMobile'));
 	Route::resource('donation', 'DonationController');
+	Route::controller('donation', 'DonationController');
+	
+	//Route::get('user/profile', array('as' => 'profile', 'uses' => 'UserController@showProfile'));
+
 	Route::resource('product', 'ProductController');
-	Route::resource('location', 'LocationController');
+
+	Route::resource('user', 'UserController');
 
 	Route::controller('notification', 'NotificationController');
 	Route::resource('notification', 'NotificationController');
+
+
+
 });
 
 /**
@@ -37,26 +49,3 @@ Route::group(['before' => 'auth'], function(){
 $donationsEventHandler = new DonationsEventHandler;
 
 Event::subscribe($donationsEventHandler);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

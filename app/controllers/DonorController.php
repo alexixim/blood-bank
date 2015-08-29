@@ -9,40 +9,13 @@ class DonorController extends \BaseController {
 	 */
 	public function index()
 	{
+
 		$donors = Donor::orderBy('created_at', 'desc')
 					->paginate($this->perPage);
 
 		return View::make('donors.list', array(
 			'donors' => $donors
 		));
-	}
-
-	public function getAlert(){
-		$blood_groups = array('') + BloodGroup::all()->lists('name', 'id');
-		
-		return View::make('donors.alert', array(
-			'blood_groups' => $blood_groups
-		));
-	}
-
-	public function getGetEligibleDonors($bloodGroupId){
-		return Response::json(array(
-			'donors' => Donor::where('blood_group_id', '=', $bloodGroupId)
-						->get()
-		));
-	}
-
-	public function postAlert(){
-
-		$donors = Input::get('donors');
-
-		foreach($donors as $donorId){
-			$donor = Donor::find($donorId);
-			// send sms to $donor->contact_no;
-		}
-
-		Session::flash('success', 'Successfully sent alerts to selected donors!');
-		return Redirect::action('DonorController@getAlert');
 	}
 
 	/**
@@ -60,7 +33,6 @@ class DonorController extends \BaseController {
 	}
 
 	protected function validate(){
-
 		$rules = array(
 			'name' => 'required',
 			'dob' => 'required|date_format:Y-m-d',
@@ -90,17 +62,10 @@ class DonorController extends \BaseController {
 	 */
 	public function store()
 	{
+		
 		$validator = $this->validate();
 
 		if($validator->fails()){
-
-			if (Request::ajax()){
-				return Response::json(array(
-					'success' => false,
-					'messages' => $validator->messages()
-				));
-			}
-
 			return Redirect::back()
 					->withErrors($validator->messages())
 					->withInput(Input::all());	
@@ -118,14 +83,6 @@ class DonorController extends \BaseController {
 		$donor->details = Input::get('details');
 
 		$donor->save();
-
-		if (Request::ajax()){
-			return Response::json(array(
-				'success' => true,
-				'donors' => [''] + Donor::all()->lists('name_with_blood_group', 'id'),
-				'donor_id' => $donor->id,
-			));
-		}
 
 		Session::flash('success', 'Successfully created donor!');
 		return Redirect::route('donor.index');

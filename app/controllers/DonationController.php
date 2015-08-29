@@ -17,6 +17,61 @@ class DonationController extends \BaseController {
 		));
 	}
 
+	public function getMobile($location_id = null){
+
+		$mobiles = array('') + Location::whereIn('location_type_id', array(3))->lists('code', 'id');
+		$donors = [''] + Donor::all()->lists('name_with_blood_group', 'id');
+		$products = [''];
+
+		foreach(Category::all() as $cat){
+			$cat_products = $cat->products->lists('name', 'id');
+			$products[$cat->name] = $cat_products;
+		}
+
+		$locations = [''] + Location::all()->lists('name_with_parent', 'id');
+
+		if($location_id){
+			$donations = Donation::where('location_id', '=', $location_id)
+				->orderBy('donations.created_at', 'desc')
+					->paginate(15);			
+		}else{
+			$donations = Donation::mobileCampaigns()
+				->orderBy('donations.created_at', 'desc')
+				->paginate(15);
+		}
+		// $donations = Donation::orderBy('created_at', 'desc')
+		// 			->paginate($this->perPage);
+		
+
+
+		if(Request::ajax()){
+			return View::make('mobiles.mdonations-table', array(
+				'donations' => $donations
+			));
+		}
+
+		return View::make('mobiles.mdonations', array(
+			'mobiles' => $mobiles,
+			'donors' => $donors,
+			'products' => $products,
+			'locations' => $locations,
+			'donations' => $donations,
+			'today' => Carbon\Carbon::now()
+		));
+	}
+
+	public function postMobile(){
+
+		$donations = Input::get('mobile_campaign_id');
+
+		foreach($donations as $mobileID){
+			$mobile = Location::find($mobileID);
+		}
+
+		//Session::flash('success', 'Successfully selected mobiles!');
+		//return Redirect::action('DonationController@getMobiles');
+		return Redirect::route('donation.getMobile');
+	}
 
 	/**
 	 * Show the form for creating a new resource.
@@ -35,10 +90,7 @@ class DonationController extends \BaseController {
 
 		$locations = [''] + Location::all()->lists('name_with_parent', 'id');
 
-		$blood_groups = array('') + BloodGroup::all()->lists('name', 'id');
-
 		return View::make('donations.create', [
-			'blood_groups' => $blood_groups,
 			'donors' => $donors,
 			'products' => $products,
 			'locations' => $locations,
@@ -75,13 +127,35 @@ class DonationController extends \BaseController {
 	 */
 	public function store()
 	{
-		$validator = $this->validate();
+		/*$validator = $this->validate();
 
 		if($validator->fails()){
 			return Redirect::back()
 					->withErrors($validator->messages())
 					->withInput(Input::all());	
+		}*/
+
+
+		$validator = $this->validate();
+
+		if($validator->fails()){
+
+			if (Request::ajax()){
+				return Response::json(array(
+					'success' => false,
+					'messages' => $validator->messages()
+				));
+			}
+
+			else{
+				return Redirect::back()
+						->withErrors($validator->messages())
+						->withInput(Input::all());	
+
+			}
 		}
+
+
 
 		$donor = Donor::find(Input::get('donor_id'));
 		$product = Product::find(Input::get('product_id'));
@@ -90,9 +164,19 @@ class DonationController extends \BaseController {
 		if(strtolower($product->category->name) == 'blood'){
 
 			if(strtolower($donor->blood_group->name) != strtolower($product->name)){
-				return Redirect::back()
-					->withErrors(['This donor is only able to donate blood of type ' . $donor->blood_group->name . ' only.'])
-					->withInput(Input::all());
+				//apply ajax
+				if (Request::ajax()){
+					return Response::json(array(
+						'success' => false,
+						'messages' => ['This donor is only able to donate blood of type ' . $donor->blood_group->name . ' only.']
+					));
+				}
+
+				else{
+					return Redirect::back()
+						->withErrors(['This donor is only able to donate blood of type ' . $donor->blood_group->name . ' only.'])
+						->withInput(Input::all());
+				}
 			}
 		}
 
@@ -108,9 +192,19 @@ class DonationController extends \BaseController {
 			$today = Carbon\Carbon::now();
 
 			if($next_possible_donation_date->gt($today)){
-				return Redirect::back()
-					->withErrors(['This donor is not able to donate untill ' . $next_possible_donation_date->format('Y-m-d') . '.'])
-					->withInput(Input::all());	
+				//if ajax request nam return response.
+				if (Request::ajax()){
+					return Response::json(array(
+						'success' => false,
+						'messages' => ['This donor is not able to donate untill ' . $next_possible_donation_date->format('Y-m-d') . '.']
+					));
+				}
+
+				else{
+					return Redirect::back()
+						->withErrors(['This donor is not able to donate untill ' . $next_possible_donation_date->format('Y-m-d') . '.'])
+						->withInput(Input::all());	
+				}
 			}
 		}
 
@@ -126,6 +220,14 @@ class DonationController extends \BaseController {
 
 		$donation->save();
 
+		/*if (Request::ajax()){
+			return Response::json(array(
+				'success' => true,
+				'donors' => [''] + Donor::all()->lists('name_with_blood_group', 'id'),
+				'donor_id' => $donor->id,
+			));
+		}*/
+
 		// Increment product quantity
 
 		$product = $donation->product;
@@ -137,9 +239,20 @@ class DonationController extends \BaseController {
 		$response = Event::fire('donation.create', array($donation));
 
 		DB::commit();
+
+		if (Request::ajax()){
+			return Response::json(array(
+				'success' => true,
+				'donors' => [''] + Donor::all()->lists('name_with_blood_group', 'id'),
+				'donor_id' => $donor->id,
+			));
+		}
+
+		else{		
+			Session::flash('success', 'Successfully created donation!');
+			return Redirect::route('donation.index');
+		}
 		
-		Session::flash('success', 'Successfully created donation!');
-		return Redirect::route('donation.index');
 	}
 
 

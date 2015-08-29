@@ -40,3 +40,7 @@
 	</div>
 </body>
 </html>
+
+<!-- {{$mobile = Input::get('mobile_id');}} -->	
+<!-- @if($donation->location->code == $mobile) -->
+<!-- @endif -->
