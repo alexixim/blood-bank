@@ -230,9 +230,9 @@ class DonationController extends \BaseController {
 
 		// Increment product quantity
 
-		$product = $donation->product;
+		/*$product = $donation->product;
 		$product->quantity = $product->quantity + $donation->quantity;
-		$product->save();
+		$product->save();*/
 
 		// increment count in item_in table
 		// increment count in location_products table
