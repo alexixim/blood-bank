@@ -49,5 +49,7 @@ Route::group(['before' => 'auth'], function(){
  */
 
 $donationsEventHandler = new DonationsEventHandler;
+$adjustmentsEventHandler = new AdjustmentsEventHandler; 
 
 Event::subscribe($donationsEventHandler);
+Event::subscribe($adjustmentsEventHandler);
