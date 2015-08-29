@@ -95,6 +95,7 @@ return array(
 
 	'providers' => array(
 
+		'Thujohn\Pdf\PdfServiceProvider',
 		'Illuminate\Foundation\Providers\ArtisanServiceProvider',
 		'Illuminate\Auth\AuthServiceProvider',
 		'Illuminate\Cache\CacheServiceProvider',
@@ -150,6 +151,7 @@ return array(
 
 	'aliases' => array(
 
+		'PDF' 			  => 'Thujohn\Pdf\PdfFacade',
 		'App'             => 'Illuminate\Support\Facades\App',
 		'Artisan'         => 'Illuminate\Support\Facades\Artisan',
 		'Auth'            => 'Illuminate\Support\Facades\Auth',

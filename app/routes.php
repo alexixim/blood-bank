@@ -37,6 +37,10 @@ Route::group(['before' => 'auth'], function(){
 
 	Route::resource('adjustment', 'AdjustmentController');
 
+	Route::controller('report', 'ReportController');
+	Route::controller('download', 'DownloadController');
+	Route::resource('ui', 'UiController');
+
 	Route::controller('notification', 'NotificationController');
 	Route::resource('notification', 'NotificationController');
 

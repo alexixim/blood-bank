@@ -9,6 +9,7 @@
 	  <li role="presentation"><a href="{{ route('location.create') }}">Locations</a></li>
 	  <li role="presentation"><a href="{{ route('donation.getMobile') }}">Mobile Campaign</a></li>
 	  <li role="presentation"><a href="{{ route('adjustment.create') }}">Adjustments</a></li>
+	  <li role="presentation"><a href="{{ route('ui.index') }}">Reports</a></li>
 	</ul>
 
 
