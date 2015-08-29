@@ -5,10 +5,10 @@
 	  <li role="presentation" class="active"><a href="#">Dashboard</a></li>
 	  <li role="presentation"><a href="{{ route('donor.create') }}">Donors</a></li>
 	  <li role="presentation"><a href="{{ route('donation.create') }}">Donations</a></li>
-	  <li role="presentation"><a href="{{ route('product.index') }}">Items</a></li>
+	  <li role="presentation"><a href="{{ route('product.create') }}">Items</a></li>
 	  <li role="presentation"><a href="{{ route('location.create') }}">Locations</a></li>
 	  <li role="presentation"><a href="{{ route('donation.getMobile') }}">Mobile Campaign</a></li>
-
+	  <li role="presentation"><a href="{{ route('adjustment.create') }}">Adjustments</a></li>
 	</ul>
 
 

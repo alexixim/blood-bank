@@ -35,6 +35,8 @@ Route::group(['before' => 'auth'], function(){
 
 	Route::resource('user', 'UserController');
 
+	Route::resource('adjustment', 'AdjustmentController');
+
 	Route::controller('notification', 'NotificationController');
 	Route::resource('notification', 'NotificationController');
 
