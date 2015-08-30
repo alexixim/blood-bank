@@ -2,7 +2,7 @@
 
 class AdjustmentsEventHandler {
 
-    //
+    
 
 
     public function updateAdjustmentProducts($adjustment,$extra)
