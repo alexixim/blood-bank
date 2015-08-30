@@ -23,7 +23,9 @@ Route::group(['before' => 'auth'], function(){
 	Route::resource('location', 'LocationController');
 	//Route::controller('location', 'LocationController');
 	
-	Route::resource('donor', 'DonorController');
+	// Route::resource('donor', 'DonorController');
+	Route::resource('donor', 'DonorController', array('except' => array('show')));
+	Route::controller('donor', 'DonorController');
 
 	Route::get('donation/mobile', array('as' => 'donation.getMobile', 'uses' => 'DonationController@getMobile'));
 	Route::resource('donation', 'DonationController');

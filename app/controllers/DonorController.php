@@ -1,5 +1,5 @@
 <?php
-
+use Clickatell\Api\ClickatellRest;
 class DonorController extends \BaseController {
 
 	/**
@@ -9,13 +9,46 @@ class DonorController extends \BaseController {
 	 */
 	public function index()
 	{
-
 		$donors = Donor::orderBy('created_at', 'desc')
 					->paginate($this->perPage);
 
 		return View::make('donors.list', array(
 			'donors' => $donors
 		));
+	}
+
+	public function getAlert(){
+		$blood_groups = array('') + BloodGroup::all()->lists('name', 'id');
+		
+		return View::make('donors.alert', array(
+			'blood_groups' => $blood_groups
+		));
+	}
+
+	public function getGetEligibleDonors($bloodGroupId){
+		return Response::json(array(
+			'donors' => Donor::where('blood_group_id', '=', $bloodGroupId)
+						->get()
+		));
+	}
+
+	public function postAlert(){
+
+		$donors = Input::get('donors');
+		$phoneNumbers = array();
+
+		foreach($donors as $donorId){
+			$donor = Donor::find($donorId);
+			$phoneNumbers[] = $donor->telephone;
+        }
+
+		// send sms to $donor->contact_no;
+		$token = 'H3G8q78gmlC7ulwzVWBYQpHNjTRWj0wZseUoJFbMuwRp3ti296dtJmB4IkXPCZGdN';
+		$clickatell = new ClickatellRest($token);
+        $response = $clickatell->sendMessage($phoneNumbers, Input::get('message'));
+
+		Session::flash('success', 'Successfully sent alerts to selected donors!');
+		return Redirect::action('DonorController@getAlert');
 	}
 
 	/**
@@ -38,6 +71,7 @@ class DonorController extends \BaseController {
 			'dob' => 'required|date_format:Y-m-d',
 			'nic' => 'required',
 			'gender' => 'not_in:0',
+			'telephone' => 'required',
 			'blood_group_id' => 'not_in:0',
 			'email' => 'email',
 		);
@@ -47,6 +81,7 @@ class DonorController extends \BaseController {
 			'dob.date_format' => 'The date of birth field should be in format of yyyy-mm-dd.',
 			'nic.required' => 'The national ID field is required.',
 			'gender.not_in' => 'The gender field is required.',
+			'telephone.required' => 'Mobile Number field is required.',
 			'blood_group_id.not_in' => 'The blood group field is required.',
 		);
 
@@ -66,6 +101,13 @@ class DonorController extends \BaseController {
 		$validator = $this->validate();
 
 		if($validator->fails()){
+
+			if (Request::ajax()){
+				return Response::json(array(
+					'success' => false,
+					'messages' => $validator->messages()
+				));
+			}
 			return Redirect::back()
 					->withErrors($validator->messages())
 					->withInput(Input::all());	
@@ -77,12 +119,22 @@ class DonorController extends \BaseController {
 		$donor->dob = Input::get('dob');
 		$donor->nic = Input::get('nic');
 		$donor->gender = Input::get('gender');
+		$donor->telephone = Input::get('telephone');
 		$donor->blood_group_id = Input::get('blood_group_id');
 		$donor->email = Input::get('email');
 		$donor->address = Input::get('address');
 		$donor->details = Input::get('details');
 
 		$donor->save();
+
+		if (Request::ajax()){
+			return Response::json(array(
+				'success' => true,
+				'donors' => [''] + Donor::all()->lists('name_with_blood_group', 'id'),
+				'donor_id' => $donor->id,
+			));
+		}
+
 
 		Session::flash('success', 'Successfully created donor!');
 		return Redirect::route('donor.index');
@@ -142,6 +194,7 @@ class DonorController extends \BaseController {
 		$donor->dob = Input::get('dob');
 		$donor->nic = Input::get('nic');
 		$donor->gender = Input::get('gender');
+		$donor->telephone = Input::get('telephone');
 		$donor->blood_group_id = Input::get('blood_group_id');
 		$donor->email = Input::get('email');
 		$donor->address = Input::get('address');

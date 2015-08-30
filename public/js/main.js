@@ -143,6 +143,121 @@ $(function(){
 
 	//////////////////////////////////////////////////////////////////////////////////////////
 
+	$("#createDonor form[name='create-donor']").on('submit', function(e){
+		e.preventDefault();
+
+		var $form = $("form[name='create-donor']");
+		var formdata = $form.serialize();
+
+		showLoader();
+
+		$.ajax({
+			url: $form.attr('action'),
+			method: 'POST',
+			data: formdata,
+			success: function(res){
+
+				if(res.success == false){
+					
+					hideLoader();
+
+					var $alerts = $("#createDonor .alert-danger");
+					$alerts.removeClass('hidden').html('');
+
+					$.each(res.messages, function(){
+						var errmsg = this[0];
+						var $ptag = $('<p />').text(errmsg);
+						$alerts.append($ptag);
+					});
+
+					return;
+				}
+
+				// if successful
+				$("#createDonor .alert-danger").hide();
+				$("#createDonor .alert-success")
+					.removeClass('hidden')
+					.append($('<p />').text('Successfully created donor!'));
+
+				var $donorslist = $('select[name="donor_id"]');
+				$('option', $donorslist).remove();
+
+				$.each(res.donors, function(key, donorname){
+					var $option = $('<option />', {value: key}).text(donorname);
+					$donorslist.append($option);
+				});
+
+				// select newly created donor
+				$donorslist.val(res.donor_id).change();
+
+				setTimeout(function(){
+					hideLoader();
+					$('#createDonor').modal('hide');
+				}, 2000);
+			}
+		});
+	});
+
+	$("#create-donor-btn").click(function(){
+		$("#createDonor form[name='create-donor']").submit();	
+	});
+
+	$("form[name='send-alerts'] select[name='blood_group_id']").on('change', function(){
+
+		var blood_group_id = $(this).val();
+		var $donorsListCont = $('.form-group.donors-list');
+
+		if(blood_group_id == 0){
+			$donorsListCont.addClass('hidden');
+			return;
+		}
+
+		// if blood group is selected
+		
+		showLoader();
+
+		$.ajax({
+			url: '/bloodbank/public/donor/get-eligible-donors/' + blood_group_id,
+			success: function(res){
+			
+				hideLoader();
+				
+
+				$donorsListCont.removeClass('hidden');
+				if(res.donors !== undefined){
+					var $donorListTable = $('table tbody', $donorsListCont);
+					$('tr', $donorListTable).remove();
+
+					if(res.donors.length == 0){
+						$donorListTable.append('<tr><td colspan="3">No matching donors available.</td></tr>');
+						return	
+					}
+
+					$.each(res.donors, function(key, donor){
+						var $tr = $('<tr />');
+
+						var $checkbox = $('<input />', {
+							name: 'donors[]', 
+							value: donor.id, 
+							type: 'checkbox', 
+							checked: true
+						});
+
+						var $th1 = $('<td />').append($checkbox);
+						var $th2 = $('<td />').text(donor.name);
+						var $th3 = $('<td />').text(donor.last_blood_donated_date_ago);
+
+
+						$tr.append($th1, $th2, $th3);
+
+						$donorListTable.append($tr);
+						// $('#detail').append($tr);
+					});
+				}
+			}
+		})
+	}).trigger('change');
+
 	
 
 });
